@@ -38,6 +38,7 @@ class MainApp(App):
         print("ALARM button pressed")
     def callback2(self, event):
         print("EDIT button pressed")
+        print("really dumb change for example")
     def callback3(self, event):
         print("HISTORY button pressed")
 
