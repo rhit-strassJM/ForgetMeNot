@@ -2,11 +2,9 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 
-
 class MainApp(App):
     def build(self):
         layout = BoxLayout(padding=10)
-        #layout.
         btn1 = Button(text =" ",
                      background_normal = 'Images/alarmclock.png',
                      background_down ='Images/alarmclockdown.png',
@@ -20,6 +18,7 @@ class MainApp(App):
                      background_normal = 'Images/pencil.png',
                      background_down ='Images/pencildown.png',
                      size_hint = (.3, .5),
+                     pos_hint = {"x":0, "y":0.5}
                    )
         btn2.bind(on_press = self.callback2)
         layout.add_widget(btn2)
@@ -28,7 +27,7 @@ class MainApp(App):
                      background_normal = 'Images/calander.png',
                      background_down ='Images/calanderdown.png',
                      size_hint = (.3, .5),
-                     #pos_hint = {"x":0.35, "y":0.3}
+                     pos_hint = {"x":0, "y":0.5}
                    )
         btn3.bind(on_press = self.callback3)
         layout.add_widget(btn3)
