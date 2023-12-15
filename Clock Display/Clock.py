@@ -7,7 +7,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.clock import Clock
 from kivy.lang import Builder
-from kivy.graphics import Color, Line
+from kivy.graphics import Color, Line, Rectangle
 
 from time import asctime
 
@@ -15,6 +15,14 @@ Builder.load_string('''
 <MyClockWidget>:
     on_pos: self.update_clock()
     on_size: self.update_clock()
+    
+    canvas.before:
+        Color:
+            rgb: 1, 1, 1  # Set the background color to white
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
     FloatLayout
         id: face
         size_hint: None, None
@@ -22,7 +30,7 @@ Builder.load_string('''
         size: 0.9*min(root.size), 0.9*min(root.size)
         canvas:
             Color:
-                rgb: 240, 255, 255
+                rgb: 0.9, 0.8, 0.7
             Ellipse:
                 size: self.size
                 pos: self.pos
@@ -45,7 +53,7 @@ class MyClockWidget(FloatLayout):
             "center_y": -0.05,
         },
         font_size=20,
-        color=(240, 255, 255),
+        color=(0, 0, 0, 1),
     )
 
     def on_parent(self, myclock, parent):
@@ -59,7 +67,8 @@ class MyClockWidget(FloatLayout):
                     # pos_hint is a fraction in range (0, 1)
                     "center_x": 0.5 + 0.45*math.sin(2 * math.pi * i/12),
                     "center_y": 0.5 + 0.45*math.cos(2 * math.pi * i/12),
-                }
+                },
+                color = (0, 0, 0)
             )
             self.ids["face"].add_widget(number)
         self.ids["face"].add_widget(self.digital_clock)
@@ -87,14 +96,15 @@ class MyClockWidget(FloatLayout):
 
         hands.canvas.clear()
         with hands.canvas:
-            Color(119, 136, 153)
+            Color(0, 0, 0)
             Line(points=[hands.center_x, hands.center_y, seconds_hand.x, seconds_hand.y], width=1, cap="round")
-            Color(119, 136, 153)
+            Color(0, 0, 0)
             Line(points=[hands.center_x, hands.center_y, minutes_hand.x, minutes_hand.y], width=2, cap="round")
-            Color(119, 136, 153)
+            Color(0, 0, 0)
             Line(points=[hands.center_x, hands.center_y, hours_hand.x, hours_hand.y], width=3, cap="round")
 
         self.digital_clock.text = asctime()
+        self.digital_clock.color = (0, 0, 0, 1)
 
 
 class MyApp(App):
