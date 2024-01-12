@@ -86,7 +86,7 @@ class MyClockWidget(FloatLayout):
 
     def update_clock(self, *args):
         """
-        Redraw clock hands
+        Redraw clock hands and update digital clock text
         """
         time = datetime.datetime.now()
         hands = self.ids["hands"]
@@ -103,7 +103,8 @@ class MyClockWidget(FloatLayout):
             Color(0, 0, 0)
             Line(points=[hands.center_x, hands.center_y, hours_hand.x, hours_hand.y], width=3, cap="round")
 
-        self.digital_clock.text = asctime()
+        formatted_time = time.strftime("%A %B %d, %Y      %I:%M %p")
+        self.digital_clock.text = formatted_time
         self.digital_clock.color = (0, 0, 0, 1)
 
 

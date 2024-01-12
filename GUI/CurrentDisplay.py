@@ -1,10 +1,12 @@
+import os
+from shutil import copyfile
 from kivy.app import App
-from kivy.graphics import Color, Ellipse, RoundedRectangle
-from kivy.uix.button import Button
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.relativelayout import RelativeLayout
+from kivy.uix.button import Button
+from kivy.uix.popup import Popup
+from kivy.uix.filechooser import FileChooserIconView
 from kivy.core.window import Window
 from kivy.utils import get_color_from_hex
 from kivy.config import Config
@@ -20,6 +22,9 @@ class ImageButton(Image):
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             print(f"{self.source} button pressed")
+            if self.source == 'ButtonImages/AddImage.png':
+                # Show the file chooser popup
+                file_chooser_popup.open()
             return True
         return super().on_touch_down(touch)
 
@@ -61,16 +66,20 @@ class CurrentDisplayApp(App):
         add_photos_button = ImageButton(
             source='ButtonImages/AddAlarm.png',
             size_hint=(None, None),
-            size=(150, 100),
+            size=(50, 50),
             pos_hint={'center_x': 0.3, 'center_y': 0.2},
+            keep_ratio=False,
+            allow_stretch=True,
         )
 
         # Create image button for "Add Alarm/Reminder"
         add_alarm_button = ImageButton(
             source='ButtonImages/AddImage.png',
             size_hint=(None, None),
-            size=(150, 100),
+            size=(50, 50),
             pos_hint={'center_x': 0.7, 'center_y': 0.2},
+            keep_ratio=False,
+            allow_stretch=True,
         )
 
         # Add buttons to the main layout
@@ -78,6 +87,68 @@ class CurrentDisplayApp(App):
         main_layout.add_widget(add_alarm_button)
 
         return main_layout
+
+# File chooser popup content
+file_chooser_content = FileChooserIconView(
+    filters=['*.png', '*.jpg', '*.jpeg']
+)
+
+# Create the file chooser popup
+file_chooser_popup = Popup(
+    title="Choose an Image File",
+    content=file_chooser_content,
+    size_hint=(None, None),
+    size=(400, 400),
+)
+
+class ImageFilePopup(Popup):
+    def __init__(self, **kwargs):
+        super(ImageFilePopup, self).__init__(**kwargs)
+
+    def on_submit(self, instance):
+        selection = file_chooser_content.selection
+        if selection:
+            selected_file = selection[0]
+            print(f"Selected file: {selected_file}")
+
+            # Set the destination folder
+            destination_folder = os.path.join(os.path.dirname(__file__), 'DisplayImages')
+
+            # Ensure the destination folder exists, create it if not
+            os.makedirs(destination_folder, exist_ok=True)
+
+            # Extract the file name from the path
+            file_name = os.path.basename(selected_file)
+
+            # Set the destination path
+            destination_path = os.path.join(destination_folder, file_name)
+
+            try:
+                # Copy the selected file to the destination folder
+                copyfile(selected_file, destination_path)
+                print(f"File saved to: {destination_path}")
+
+                # Close the file chooser popup
+                file_chooser_popup.dismiss()
+
+                # Show the success popup
+                success_popup.open()
+            except Exception as e:
+                print(f"Error saving file: {e}")
+
+# Create an instance of the ImageFilePopup
+image_file_popup = ImageFilePopup(title="Image File Saved", size_hint=(None, None), size=(300, 200))
+
+# Success popup
+success_popup = Popup(
+    title="Success",
+    content=Label(text="Image File Saved Successfully!"),
+    size_hint=(None, None),
+    size=(200, 150),
+)
+
+# Bind the on_submit event to the on_submit method
+file_chooser_content.bind(on_submit=image_file_popup.on_submit)
 
 if __name__ == "__main__":
     CurrentDisplayApp().run()
