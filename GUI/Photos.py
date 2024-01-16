@@ -12,8 +12,11 @@ class ImageFlipperApp(App):
     def build(self):
         self.layout = BoxLayout(orientation="vertical")
 
+        # Get the current directory of the script
+        current_directory = os.path.dirname(os.path.realpath(__file__))
+
         # Directory containing images
-        images_directory = "DisplayImages"
+        images_directory = os.path.join(current_directory, "DisplayImages")
 
         # List of image filenames
         self.image_filenames = self.get_image_files(images_directory)
@@ -62,6 +65,9 @@ class ImageFlipperApp(App):
 
         # Start the fade-out animation
         fade_out.start(self.image_widget)
+
+    def get_layout(self):
+        return self.layout
 
 if __name__ == "__main__":
     ImageFlipperApp().run()
