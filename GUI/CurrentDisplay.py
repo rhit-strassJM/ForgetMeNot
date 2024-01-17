@@ -118,8 +118,6 @@ class ImageFilePopup(Popup):
 
             # Set the destination folder
             destination_folder = os.path.join(os.path.dirname(__file__), 'DisplayImages')
-
-            # Ensure the destination folder exists, create it if not
             os.makedirs(destination_folder, exist_ok=True)
 
             # Extract the file name from the path
@@ -153,7 +151,7 @@ success_popup = Popup(
 )
 
 # Bind the on_submit event to the on_submit method
-file_chooser_content.bind(on_submit=image_file_popup.on_submit)
+file_chooser_content.bind(on_submit=lambda instance, selection, touch: image_file_popup.on_submit(instance))
 
 if __name__ == "__main__":
     CurrentDisplayApp().run()
