@@ -8,6 +8,7 @@ from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.uix.filechooser import FileChooserIconView
 from kivy.core.window import Window
+from kivy.uix.screenmanager import Screen
 from kivy.utils import get_color_from_hex
 from kivy.config import Config
 
@@ -28,8 +29,8 @@ class ImageButton(Image):
             return True
         return super().on_touch_down(touch)
 
-class CurrentDisplayApp(App):
-    def build(self):
+class CurrentDisplayScreen(Screen):
+    def create_display_layout(self):
         # Set the background color of the window to white
         Window.clearcolor = get_color_from_hex("#FFFFFF")
 
@@ -87,6 +88,10 @@ class CurrentDisplayApp(App):
         main_layout.add_widget(add_alarm_button)
 
         return main_layout
+
+    def on_enter(self, *args):
+        """ Called when this screen is displayed """
+        self.add_widget(self.create_display_layout())
 
 # File chooser popup content
 file_chooser_content = FileChooserIconView(

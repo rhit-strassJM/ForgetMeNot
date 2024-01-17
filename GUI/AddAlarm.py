@@ -22,6 +22,7 @@ class ReminderApp(App):
         entry_box.add_widget(self.note_input)
 
         self.root.add_widget(entry_box)
+        print("hi guys")
 
         # Button for selecting date
         self.date_button = Button(text='Select Date', on_press=self.show_date_picker, size_hint_y=None, height=30)
