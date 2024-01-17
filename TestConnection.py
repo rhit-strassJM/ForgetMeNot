@@ -1,7 +1,7 @@
 import socket
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(('192.168.43.68', 2222))
+client.connect(('192.168.137.2', 2222))
 
 file = open('cat_testimage.jpg', 'rb')
 image_data = file.read(2048)
