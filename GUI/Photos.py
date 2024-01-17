@@ -36,7 +36,7 @@ class ImageFlipperApp(App):
         all_files = os.listdir(directory)
 
         # Filter out only files with .jpg extension
-        image_files = [file for file in all_files if file.lower().endswith(('.jpg', '.jpeg'))]
+        image_files = [file for file in all_files if file.lower().endswith(('.jpg', '.jpeg', 'png'))]
 
         # Sort the image filenames based on their numeric part
         image_files.sort(key=lambda x: int(''.join(filter(str.isdigit, x))))
