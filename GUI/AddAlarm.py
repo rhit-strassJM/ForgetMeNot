@@ -22,6 +22,7 @@ class ReminderApp(App):
         entry_box.add_widget(self.time_input)
 
         self.root.add_widget(entry_box)
+        print("hi guys")
 
         # Button to add reminder
         add_button = Button(text='Add Reminder', on_press=self.add_reminder)
