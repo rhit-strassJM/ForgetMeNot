@@ -1,11 +1,8 @@
-from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
-
-from GUI.CurrentDisplay import CurrentDisplayScreen
 
 
 class LoginScreen(Screen):
@@ -32,18 +29,3 @@ class LoginScreen(Screen):
 
         if username == 'username' and password == 'password':
             self.manager.current = 'display'
-
-class SecondScreen(Screen):
-    def __init__(self, **kwargs):
-        super(SecondScreen, self).__init__(**kwargs)
-        self.add_widget(Label(text='Welcome to the second screen!'))
-
-class MyApp(App):
-    def build(self):
-        sm = ScreenManager()
-        sm.add_widget(LoginScreen(name='login'))
-        sm.add_widget(CurrentDisplayScreen(name='display'))
-        return sm
-
-if __name__ == '__main__':
-    MyApp().run()
