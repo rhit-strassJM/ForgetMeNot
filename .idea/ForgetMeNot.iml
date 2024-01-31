@@ -10,7 +10,7 @@
   <component name="PyNamespacePackagesService">
     <option name="namespacePackageFolders">
       <list>
-        <option value="$MODULE_DIR$/Clock Display" />
+        <option value="$MODULE_DIR$/ClockDisplay" />
       </list>
     </option>
   </component>
