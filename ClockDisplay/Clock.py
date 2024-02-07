@@ -52,7 +52,7 @@ class MyClockWidget(FloatLayout):
             "center_x": 0.5,
             "center_y": -0.05,
         },
-        font_size=20,
+        font_size=30,
         color=(0, 0, 0, 1),
     )
 
