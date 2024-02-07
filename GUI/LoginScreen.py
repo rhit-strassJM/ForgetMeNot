@@ -1,8 +1,19 @@
+from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
+
+Builder.load_string('''
+<LoginScreen>:
+    canvas.before:
+        Color:
+            rgba: 0.5, 0.5, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+''')
 
 
 class LoginScreen(Screen):
