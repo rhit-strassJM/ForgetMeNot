@@ -12,6 +12,7 @@ class TestApp(App):
         login_screen = LoginScreen(name='login')
         reminder_screen = ReminderScreen(name='reminder')
         current_screen = CurrentDisplayScreen(name='display')
+
         # add to the screen manager
         sm.add_widget(login_screen)
         sm.add_widget(reminder_screen)
