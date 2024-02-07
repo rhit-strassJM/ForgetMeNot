@@ -9,7 +9,7 @@ class ImageButton(Image):
         if self.collide_point(*touch.pos):
             if self.source == 'ButtonImages/AddAlarm.png':
                 # Access the ScreenManager instance and switch to a new screen
-                self.screen_manager.current = 'login'
+                self.screen_manager.current = 'reminder'
             else:
                 print(f"{self.source} button pressed")
             return True  # consume the touch event
