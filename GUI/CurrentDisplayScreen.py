@@ -10,9 +10,21 @@ from kivy.utils import get_color_from_hex
 
 from GUI.ImageButton import ImageButton
 from Photos import ImageFlipperApp
+from Physical.DisplayScreen import success_popup
 
 
 class CurrentDisplayScreen(Screen):
+    def __init__(self, **kwargs):
+        super(CurrentDisplayScreen, self).__init__(**kwargs)
+
+        # Create the file chooser popup
+        self.file_chooser_content = FileChooserIconView(filters=['*.png', '*.jpg', '*.jpeg'])
+        self.file_chooser_popup = Popup(title="Choose an Image File",
+                                        content=self.file_chooser_content,
+                                        size_hint=(None, None),
+                                        size=(400, 400))
+        self.file_chooser_content.bind(on_submit=self.image_file_popup_on_submit)
+
     def create_display_layout(self):
         Window.clearcolor = get_color_from_hex("#FFFFFF")
         main_layout = RelativeLayout()
@@ -36,6 +48,7 @@ class CurrentDisplayScreen(Screen):
 
         add_photos_button = ImageButton(
             self.manager,
+            self.file_chooser_popup,
             source='ButtonImages/AddAlarm.png',
             size_hint=(None, None),
             size=(50, 50),
@@ -44,10 +57,9 @@ class CurrentDisplayScreen(Screen):
             allow_stretch=True,
         )
 
-
-
         add_alarm_button = ImageButton(
             self.manager,
+            self.file_chooser_popup,
             source='ButtonImages/AddImage.png',
             size_hint=(None, None),
             size=(50, 50),
@@ -65,28 +77,7 @@ class CurrentDisplayScreen(Screen):
         """ Called when this screen is displayed """
         self.add_widget(self.create_display_layout())
 
-
-
-# File chooser popup content
-file_chooser_content = FileChooserIconView(
-    filters=['*.png', '*.jpg', '*.jpeg']
-)
-
-# Create the file chooser popup
-file_chooser_popup = Popup(
-    title="Choose an Image File",
-    content=file_chooser_content,
-    size_hint=(None, None),
-    size=(400, 400),
-)
-
-
-class ImageFilePopup(Popup):
-    def __init__(self, **kwargs):
-        super(ImageFilePopup, self).__init__(**kwargs)
-
-    def on_submit(self, instance):
-        selection = file_chooser_content.selection
+    def image_file_popup_on_submit(self, instance, selection, touch):
         if selection:
             selected_file = selection[0]
             print(f"Selected file: {selected_file}")
@@ -102,21 +93,13 @@ class ImageFilePopup(Popup):
                 copyfile(selected_file, destination_path)
                 print(f"File saved to: {destination_path}")
 
-                file_chooser_popup.dismiss()
+                self.file_chooser_popup.dismiss()
 
                 success_popup.open()
             except Exception as e:
                 print(f"Error saving file: {e}")
 
-
-image_file_popup = ImageFilePopup(title="Image File Saved", size_hint=(None, None), size=(300, 200))
-
-success_popup = Popup(
-    title="Success",
-    content=Label(text="Image File Saved Successfully!"),
-    size_hint=(None, None),
-    size=(200, 150),
-)
-
-file_chooser_content.bind(on_submit=lambda instance, selection, touch: image_file_popup.on_submit(instance))
+class ImageFilePopup(Popup):
+    def __init__(self, **kwargs):
+        super(ImageFilePopup, self).__init__(**kwargs)
 
