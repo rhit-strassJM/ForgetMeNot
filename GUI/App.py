@@ -1,11 +1,14 @@
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager
+from kivymd.uix.pickers import MDTimePicker
+
 from GUI.CurrentDisplayScreen import CurrentDisplayScreen
 from GUI.LoginScreen import LoginScreen
 from GUI.ReminderScreen import ReminderScreen
 
 
 class TestApp(App):
+
     def build(self):
         sm = ScreenManager()
         # instantiate the screens

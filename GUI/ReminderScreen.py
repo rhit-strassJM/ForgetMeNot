@@ -1,38 +1,65 @@
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import Screen
-from kivy.uix.spinner import Spinner
-from kivy.clock import Clock
-
+from kivymd.uix.pickers import MDDatePicker, MDTimePicker
 
 class ReminderScreen(Screen):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.time_spinner = Spinner(
-            text='Select Time',
-            values=('00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'),
-            size_hint=(0.5, 0.5),
-            pos_hint={'center_x': 0.5, 'center_y': 0.5}
-        )
-        self.time_spinner.bind(text=self.set_alarm)
-        self.add_widget(self.time_spinner)
+        super(ReminderScreen, self).__init__(**kwargs)
 
-        self.alarm_time = None
-        self.alarm_id = None
+        # Create layout
+        self.layout = BoxLayout(orientation='vertical')
 
-    def set_alarm(self, instance, time):
-        self.alarm_time = time
+        # Add title label
+        self.title_label = Label(text='Reminder', font_size=30)
+        self.layout.add_widget(self.title_label)
 
-    def start_alarm(self):
-        if self.alarm_id is not None:
-            Clock.unschedule(self.alarm_id)
-        self.alarm_id = Clock.schedule_interval(self.fire_alarm, 1)
+        # Add date and time input fields
+        self.date_input = TextInput(hint_text='Select Date')
+        self.time_input = TextInput(hint_text='Select Time')
+        self.layout.add_widget(self.date_input)
+        self.layout.add_widget(self.time_input)
 
-    def fire_alarm(self, dt):
-        if self.alarm_time is not None and self.alarm_time == self.time_picker.time:
-            print("Alarm!")
-            self.stop_alarm()
-        return False
+        # Add note input field
+        self.note_input = TextInput(hint_text='Enter Note')
+        self.layout.add_widget(self.note_input)
 
-    def stop_alarm(self):
-        if self.alarm_id is not None:
-            Clock.unschedule(self.alarm_id)
-            self.alarm_id = None
+        # Add buttons for date, time, and save
+        self.date_button = Button(text='Select Date')
+        self.date_button.bind(on_press=self.show_date_picker)
+        self.time_button = Button(text='Select Time')
+        self.time_button.bind(on_press=self.show_time_picker)
+        self.save_button = Button(text='Save Reminder')
+        self.save_button.bind(on_press=self.save_reminder)
+        self.layout.add_widget(self.date_button)
+        self.layout.add_widget(self.time_button)
+        self.layout.add_widget(self.save_button)
+
+        # Add layout to screen
+        self.add_widget(self.layout)
+
+    def show_date_picker(self, instance):
+        date_dialog = MDDatePicker()
+        date_dialog.bind(on_save=self.on_date_save)
+        date_dialog.open()
+
+    def show_time_picker(self, instance):
+        time_dialog = MDTimePicker()
+        time_dialog.bind(on_save=self.on_time_save)
+        time_dialog.open()
+
+    def on_date_save(self, instance, value, date_range):
+        self.date_input.text = value.strftime('%Y-%m-%d')
+
+    def on_time_save(self, instance, value):
+        self.time_input.text = value.strftime('%H:%M')
+
+    def save_reminder(self, instance):
+        date = self.date_input.text
+        time = self.time_input.text
+        note = self.note_input.text
+
+        # Here you can save the reminder with the provided information
+        print(f"Reminder saved: Date - {date}, Time - {time}, Note - {note}")
