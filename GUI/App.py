@@ -5,22 +5,27 @@ from GUI.CurrentDisplayScreen import CurrentDisplayScreen
 from GUI.LoginScreen import LoginScreen
 from GUI.ReminderScreen import ReminderScreen
 
-
 class TestApp(App):
-
     def build(self):
-        sm = ScreenManager()
+        self.sm = ScreenManager()
         # instantiate the screens
-        login_screen = LoginScreen(name='login')
-        reminder_screen = ReminderScreen(name='reminder')
-        current_screen = CurrentDisplayScreen(name='display')
+        self.login_screen = LoginScreen(name='login')
+        self.reminder_screen = ReminderScreen(name='reminder')
+        self.current_screen = CurrentDisplayScreen(name='display')
 
         # add to the screen manager
-        sm.add_widget(login_screen)
-        sm.add_widget(reminder_screen)
-        sm.add_widget(current_screen)
-        return sm
+        self.sm.add_widget(self.login_screen)
+        self.sm.add_widget(self.reminder_screen)
+        self.sm.add_widget(self.current_screen)
 
+        # Initially, show the login screen
+        self.sm.current = 'login'
+
+        return self.sm
+
+    def show_current_display_screen(self):
+        # Switch to the current display screen
+        self.sm.current = 'display'
 
 if __name__ == '__main__':
     TestApp().run()

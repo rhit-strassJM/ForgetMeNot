@@ -4,22 +4,30 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
-from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.popup import Popup
 from kivy.uix.button import Button
 from kivy.uix.filechooser import FileChooserListView
+from kivy.uix.screenmanager import Screen
 
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
-class MainScreen(Screen):
-    pass
+class CurrentDisplayScreen(Screen):
+    name = 'display'
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        folder_id = '187UAKNesq0U0FA6E043aP-JnTKGixDhA'  # Replace 'your_folder_id' with the actual folder ID
+        self.add_widget(Button(text="Add Image", on_press=lambda instance: self.show_image_popup(folder_id)))
+
+    def show_image_popup(self, folder_id):
+        popup = AddImagePopup(folder_id=folder_id)
+        popup.open()
 
 class AddImagePopup(Popup):
     def __init__(self, folder_id, **kwargs):
         super(AddImagePopup, self).__init__(**kwargs)
-        self.folder_id = '187UAKNesq0U0FA6E043aP-JnTKGixDhA'
-        self.title = 'Add Image'
+        self.folder_id = folder_id
+        self.title = 'display'
         self.file_chooser = FileChooserListView(path='.')
         self.file_chooser.bind(on_submit=self.upload_image)
         self.add_widget(self.file_chooser)
@@ -55,22 +63,3 @@ class AddImagePopup(Popup):
             with open('token.json', 'w') as token:
                 token.write(credentials.to_json())
         return credentials
-
-class TestApp(App):
-    def build(self):
-        sm = ScreenManager()
-        main_screen = MainScreen(name='main')
-        sm.add_widget(main_screen)
-        return sm
-
-    def on_start(self):
-        folder_id = 'your_folder_id'  # Replace 'your_folder_id' with the actual folder ID
-        self.root.get_screen('main').add_widget(Button(text="Add Image", on_press=lambda instance: self.show_image_popup(folder_id)))
-        # Add Alarm button can be added here
-
-    def show_image_popup(self, folder_id):
-        popup = AddImagePopup(folder_id=folder_id)
-        popup.open()
-
-if __name__ == '__main__':
-    TestApp().run()

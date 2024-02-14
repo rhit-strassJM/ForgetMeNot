@@ -1,3 +1,4 @@
+from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
@@ -39,4 +40,4 @@ class LoginScreen(Screen):
         password = self.password_input.text
 
         if username == 'username' and password == 'password':
-            self.manager.current = 'display'
+            App.get_running_app().show_current_display_screen()
