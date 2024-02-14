@@ -6,6 +6,7 @@ from kivy.uix.screenmanager import Screen
 from kivymd.uix.pickers import MDDatePicker, MDTimePicker
 
 class ReminderScreen(Screen):
+    name = 'reminder'
     def __init__(self, **kwargs):
         super(ReminderScreen, self).__init__(**kwargs)
 

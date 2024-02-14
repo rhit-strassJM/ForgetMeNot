@@ -27,5 +27,8 @@ class TestApp(App):
         # Switch to the current display screen
         self.sm.current = 'display'
 
+    def show_current_reminder_screen(self):
+        self.sm.current = 'reminder'
+
 if __name__ == '__main__':
     TestApp().run()
