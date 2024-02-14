@@ -1,105 +1,76 @@
 import os
-from shutil import copyfile
-from kivy.uix.label import Label
-from kivy.uix.relativelayout import RelativeLayout
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+from kivy.app import App
+from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.popup import Popup
-from kivy.uix.filechooser import FileChooserIconView
-from kivy.core.window import Window
-from kivy.uix.screenmanager import Screen
-from kivy.utils import get_color_from_hex
+from kivy.uix.button import Button
+from kivy.uix.filechooser import FileChooserListView
 
-from GUI.ImageButton import ImageButton
-from Photos import ImageFlipperApp
-from Physical.DisplayScreen import success_popup
+SCOPES = ['https://www.googleapis.com/auth/drive']
 
+class MainScreen(Screen):
+    pass
 
-class CurrentDisplayScreen(Screen):
-    def __init__(self, **kwargs):
-        super(CurrentDisplayScreen, self).__init__(**kwargs)
+class AddImagePopup(Popup):
+    def __init__(self, folder_id, **kwargs):
+        super(AddImagePopup, self).__init__(**kwargs)
+        self.folder_id = '187UAKNesq0U0FA6E043aP-JnTKGixDhA'
+        self.title = 'Add Image'
+        self.file_chooser = FileChooserListView(path='.')
+        self.file_chooser.bind(on_submit=self.upload_image)
+        self.add_widget(self.file_chooser)
 
-        # Create the file chooser popup
-        self.file_chooser_content = FileChooserIconView(filters=['*.png', '*.jpg', '*.jpeg'])
-        self.file_chooser_popup = Popup(title="Choose an Image File",
-                                        content=self.file_chooser_content,
-                                        size_hint=(None, None),
-                                        size=(400, 400))
-        self.file_chooser_content.bind(on_submit=self.image_file_popup_on_submit)
+    def upload_image(self, instance, value, *args):
+        image_path = value[0]
+        credentials = self.get_credentials()
+        if credentials:
+            service = build('drive', 'v3', credentials=credentials)
+            file_metadata = {
+                'name': os.path.basename(image_path),
+                'parents': [self.folder_id]  # Specify the parent folder's ID
+            }
+            media = MediaFileUpload(image_path, mimetype='image/jpeg')
+            file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+            print('File ID:', file.get('id'))
+            self.dismiss()
 
-    def create_display_layout(self):
-        Window.clearcolor = get_color_from_hex("#FFFFFF")
-        main_layout = RelativeLayout()
-        top_label = Label(
-            text="Current Display",
-            size_hint=(1, 0.2),
-            font_name="DejaVuSans",
-            font_size=30,
-            color=get_color_from_hex("#000000"),
-            pos_hint={'top': 1}  # Position the label at the top of the screen
-        )
+    def get_credentials(self):
+        credentials = None
+        # The file token.json stores the user's access and refresh tokens
+        if os.path.exists('token.json'):
+            credentials = Credentials.from_authorized_user_file('token.json')
+        # If there are no (valid) credentials available, let the user log in.
+        if not credentials or not credentials.valid:
+            if credentials and credentials.expired and credentials.refresh_token:
+                credentials.refresh(Request())
+            else:
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    'credentials.json', SCOPES)
+                credentials = flow.run_local_server(port=0)
+            # Save the credentials for the next run
+            with open('token.json', 'w') as token:
+                token.write(credentials.to_json())
+        return credentials
 
-        main_layout.add_widget(top_label)
-        image_flipper_app = ImageFlipperApp()
-        image_flipper_root = image_flipper_app.build()
+class TestApp(App):
+    def build(self):
+        sm = ScreenManager()
+        main_screen = MainScreen(name='main')
+        sm.add_widget(main_screen)
+        return sm
 
-        image_flipper_root.pos_hint = {'center_x': 0.5, 'center_y': 0.6}  # Adjust as needed
-        image_flipper_root.size_hint = (0.6, 0.4)  # Adjust as needed
+    def on_start(self):
+        folder_id = 'your_folder_id'  # Replace 'your_folder_id' with the actual folder ID
+        self.root.get_screen('main').add_widget(Button(text="Add Image", on_press=lambda instance: self.show_image_popup(folder_id)))
+        # Add Alarm button can be added here
 
-        main_layout.add_widget(image_flipper_root)
+    def show_image_popup(self, folder_id):
+        popup = AddImagePopup(folder_id=folder_id)
+        popup.open()
 
-        add_photos_button = ImageButton(
-            self.manager,
-            self.file_chooser_popup,
-            source='ButtonImages/AddAlarm.png',
-            size_hint=(None, None),
-            size=(50, 50),
-            pos_hint={'center_x': 0.3, 'center_y': 0.2},
-            keep_ratio=False,
-            allow_stretch=True,
-        )
-
-        add_alarm_button = ImageButton(
-            self.manager,
-            self.file_chooser_popup,
-            source='ButtonImages/AddImage.png',
-            size_hint=(None, None),
-            size=(50, 50),
-            pos_hint={'center_x': 0.7, 'center_y': 0.2},
-            keep_ratio=False,
-            allow_stretch=True,
-        )
-
-        main_layout.add_widget(add_photos_button)
-        main_layout.add_widget(add_alarm_button)
-
-        return main_layout
-
-    def on_enter(self, *args):
-        """ Called when this screen is displayed """
-        self.add_widget(self.create_display_layout())
-
-    def image_file_popup_on_submit(self, instance, selection, touch):
-        if selection:
-            selected_file = selection[0]
-            print(f"Selected file: {selected_file}")
-
-            destination_folder = os.path.join(os.path.dirname(__file__), 'DisplayImages')
-            os.makedirs(destination_folder, exist_ok=True)
-
-            file_name = os.path.basename(selected_file)
-
-            destination_path = os.path.join(destination_folder, file_name)
-
-            try:
-                copyfile(selected_file, destination_path)
-                print(f"File saved to: {destination_path}")
-
-                self.file_chooser_popup.dismiss()
-
-                success_popup.open()
-            except Exception as e:
-                print(f"Error saving file: {e}")
-
-class ImageFilePopup(Popup):
-    def __init__(self, **kwargs):
-        super(ImageFilePopup, self).__init__(**kwargs)
-
+if __name__ == '__main__':
+    TestApp().run()
