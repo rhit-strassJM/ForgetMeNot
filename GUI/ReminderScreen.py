@@ -6,6 +6,10 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
 from kivy.uix.filechooser import FileChooserListView
 from kivymd.uix.pickers import MDDatePicker, MDTimePicker
+import os
+import pyaudio
+import wave
+import json
 
 class ReminderScreen(Screen):
     name = 'reminder'
@@ -29,18 +33,21 @@ class ReminderScreen(Screen):
         self.note_input = TextInput(hint_text='Enter Note')
         self.layout.add_widget(self.note_input)
 
-        # Add buttons for date, time, and save
+        # Add buttons for date, time, save, and record audio
         self.date_button = Button(text='Select Date')
         self.date_button.bind(on_press=self.show_date_picker)
         self.time_button = Button(text='Select Time')
         self.time_button.bind(on_press=self.show_time_picker)
         self.add_audio_button = Button(text='Add Audio')
         self.add_audio_button.bind(on_press=self.show_audio_popup)
+        self.record_audio_button = Button(text='Record Audio')
+        self.record_audio_button.bind(on_press=self.record_audio_wrapper)
         self.save_button = Button(text='Save Reminder')
         self.save_button.bind(on_press=self.save_reminder)
         self.layout.add_widget(self.date_button)
         self.layout.add_widget(self.time_button)
         self.layout.add_widget(self.add_audio_button)
+        self.layout.add_widget(self.record_audio_button)
         self.layout.add_widget(self.save_button)
 
         # Add layout to screen
@@ -55,12 +62,6 @@ class ReminderScreen(Screen):
         time_dialog = MDTimePicker()
         time_dialog.bind(on_save=self.on_time_save)
         time_dialog.open()
-
-    def on_date_save(self, instance, value, date_range):
-        self.date_input.text = value.strftime('%Y-%m-%d')
-
-    def on_time_save(self, instance, value):
-        self.time_input.text = value.strftime('%H:%M')
 
     def show_audio_popup(self, instance):
         content = BoxLayout(orientation='vertical')
@@ -78,6 +79,17 @@ class ReminderScreen(Screen):
             self.audio_file_path = selected_file
             popup.dismiss()
 
+    def record_audio_wrapper(self, instance):
+        popup = Popup(title='Recording Audio', size_hint=(0.9, 0.5))
+        popup.open()
+        record_audio('recorded_audio.wav', popup.dismiss)
+
+    def on_date_save(self, instance, value, date_range):
+        self.date_input.text = value.strftime('%Y-%m-%d')
+
+    def on_time_save(self, instance, value):
+        self.time_input.text = value.strftime('%H:%M')
+
     def save_reminder(self, instance):
         date = self.date_input.text
         time = self.time_input.text
@@ -86,6 +98,69 @@ class ReminderScreen(Screen):
         # Here you can save the reminder with the provided information
         print(f"Reminder saved: Date - {date}, Time - {time}, Note - {note}, Audio File - {self.audio_file_path}")
 
-# Example usage:
-# You need to handle the audio file selection and saving logic accordingly
-# The code above prints the selected audio file path for demonstration purposes
+# Record audio using PyAudio
+def record_audio(file_name, callback, duration=15):
+    chunk = 1024
+    format = pyaudio.paInt16
+    channels = 1
+    rate = 44100
+
+    p = pyaudio.PyAudio()
+
+    stream = p.open(format=format,
+                    channels=channels,
+                    rate=rate,
+                    input=True,
+                    frames_per_buffer=chunk)
+
+    frames = []
+
+    print("Recording...")
+
+    for i in range(0, int(rate / chunk * duration)):
+        data = stream.read(chunk)
+        frames.append(data)
+
+    print("Finished recording")
+
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
+
+    # Save audio to WAV file in the "Recordings" folder
+    directory = "Recordings"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    file_path = os.path.join(directory, file_name)
+    with wave.open(file_path, 'wb') as wf:
+        wf.setnchannels(channels)
+        wf.setsampwidth(pyaudio.PyAudio().get_sample_size(format))
+        wf.setframerate(rate)
+        wf.writeframes(b''.join(frames))
+
+    # Call the provided callback function after recording is finished
+    if callback:
+        callback()
+
+# Convert audio to JSON
+def audio_to_json(file_name):
+    directory = "Recordings"
+    file_path = os.path.join(directory, file_name)
+    with open(file_path, 'rb') as audio_file:
+        audio_data = audio_file.read()
+
+    # Create a dictionary to store audio data
+    audio_dict = {
+        'sample_rate': 44100,
+        'channels': 1,
+        'audio_data': audio_data.hex()
+    }
+
+    # Convert dictionary to JSON
+    json_data = json.dumps(audio_dict)
+
+    # Save JSON data to a file
+    json_file_name = os.path.splitext(file_name)[0] + '.json'
+    json_file_path = os.path.join(directory, json_file_name)
+    with open(json_file_path, 'w') as json_file:
+        json_file.write
