@@ -1,9 +1,10 @@
+import os
 import pyaudio
 import wave
 import json
 
 # Record audio using PyAudio
-def record_audio(file_path, duration=15):
+def record_audio(file_name, duration=15):
     chunk = 1024
     format = pyaudio.paInt16
     channels = 1
@@ -31,7 +32,11 @@ def record_audio(file_path, duration=15):
     stream.close()
     p.terminate()
 
-    # Save audio to WAV file
+    # Save audio to WAV file in the "Recordings" folder
+    directory = "Recordings"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    file_path = os.path.join(directory, file_name)
     with wave.open(file_path, 'wb') as wf:
         wf.setnchannels(channels)
         wf.setsampwidth(pyaudio.PyAudio().get_sample_size(format))
@@ -39,7 +44,9 @@ def record_audio(file_path, duration=15):
         wf.writeframes(b''.join(frames))
 
 # Convert audio to JSON
-def audio_to_json(file_path):
+def audio_to_json(file_name):
+    directory = "Recordings"
+    file_path = os.path.join(directory, file_name)
     with open(file_path, 'rb') as audio_file:
         audio_data = audio_file.read()
 
@@ -54,7 +61,9 @@ def audio_to_json(file_path):
     json_data = json.dumps(audio_dict)
 
     # Save JSON data to a file
-    with open('audio_data.json', 'w') as json_file:
+    json_file_name = os.path.splitext(file_name)[0] + '.json'
+    json_file_path = os.path.join(directory, json_file_name)
+    with open(json_file_path, 'w') as json_file:
         json_file.write(json_data)
 
 # Example usage
