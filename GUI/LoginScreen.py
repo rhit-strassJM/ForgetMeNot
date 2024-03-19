@@ -26,14 +26,13 @@ class LoginScreen(Screen):
 
         self.username_input = TextInput(hint_text='Enter Username', multiline=False, size_hint_y=None, height=50)
         self.password_input = TextInput(hint_text='Enter Password', password=True, multiline=False, size_hint_y=None, height=50)
-        login_button = Button(text='Login', on_press=self.check_credentials, background_color=[0.7, 1, 1, 1])
+       # rgb(121, 167, 200)
+        login_button = Button(text='Login', on_press=self.check_credentials, background_color=[0.475, 0.655, 0.784])
 
-        image = AsyncImage(source='DisplayImages/Logo.png', size_hint_y=None, height=300)
+        image = AsyncImage(source='DisplayImages/Logo.png', size_hint_y=None, height=350)
         layout.add_widget(image)
 
-        #layout.add_widget(Label(text='Please Enter Username:'))
         layout.add_widget(self.username_input)
-        #layout.add_widget(Label(text='Please Enter Password:'))
         layout.add_widget(self.password_input)
         layout.add_widget(login_button)
 

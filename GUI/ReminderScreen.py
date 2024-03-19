@@ -5,6 +5,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
 from kivy.uix.filechooser import FileChooserListView
+
 from kivymd.uix.pickers import MDDatePicker, MDTimePicker
 import os
 import pyaudio
@@ -13,21 +14,15 @@ import json
 
 class ReminderScreen(Screen):
     name = 'reminder'
+
     def __init__(self, **kwargs):
         super(ReminderScreen, self).__init__(**kwargs)
-
         # Create layout
         self.layout = BoxLayout(orientation='vertical')
 
         # Add title label
         self.title_label = Label(text='Reminder', font_size=30)
         self.layout.add_widget(self.title_label)
-
-        # Add date and time input fields
-        self.date_input = TextInput(hint_text='Select Date')
-        self.time_input = TextInput(hint_text='Select Time')
-        self.layout.add_widget(self.date_input)
-        self.layout.add_widget(self.time_input)
 
         # Add note input field
         self.note_input = TextInput(hint_text='Enter Note')
@@ -44,6 +39,7 @@ class ReminderScreen(Screen):
         self.record_audio_button.bind(on_press=self.record_audio_wrapper)
         self.save_button = Button(text='Save Reminder')
         self.save_button.bind(on_press=self.save_reminder)
+
         self.layout.add_widget(self.date_button)
         self.layout.add_widget(self.time_button)
         self.layout.add_widget(self.add_audio_button)
@@ -53,14 +49,17 @@ class ReminderScreen(Screen):
         # Add layout to screen
         self.add_widget(self.layout)
 
+    def on_cancel(self, instance, value):
+        print("cancelled")
+
     def show_date_picker(self, instance):
         date_dialog = MDDatePicker()
-        date_dialog.bind(on_save=self.on_date_save)
+        date_dialog.bind(on_save=self.on_date_save, on_cancel=self.on_cancel)
         date_dialog.open()
 
     def show_time_picker(self, instance):
         time_dialog = MDTimePicker()
-        time_dialog.bind(on_save=self.on_time_save)
+        time_dialog.bind(on_save=self.on_time_save, on_cancel=self.on_cancel)
         time_dialog.open()
 
     def show_audio_popup(self, instance):
@@ -85,18 +84,18 @@ class ReminderScreen(Screen):
         record_audio('recorded_audio.wav', popup.dismiss)
 
     def on_date_save(self, instance, value, date_range):
-        self.date_input.text = value.strftime('%Y-%m-%d')
+        global date
+        date = value.strftime('%Y-%m-%d')
 
     def on_time_save(self, instance, value):
-        self.time_input.text = value.strftime('%H:%M')
+        global time
+        time = value.strftime('%H:%M')
 
     def save_reminder(self, instance):
-        date = self.date_input.text
-        time = self.time_input.text
         note = self.note_input.text
 
         # Here you can save the reminder with the provided information
-        print(f"Reminder saved: Date - {date}, Time - {time}, Note - {note}, Audio File - {self.audio_file_path}")
+        print(f"Reminder saved: Date - {date}, Time - {time}, Note - {note}")
 
 # Record audio using PyAudio
 def record_audio(file_name, callback, duration=15):

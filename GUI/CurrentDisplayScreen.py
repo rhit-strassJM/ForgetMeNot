@@ -5,6 +5,7 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from kivy.app import App
+from kivy.lang import Builder
 from kivy.uix.popup import Popup
 from kivy.uix.button import Button
 from kivy.uix.filechooser import FileChooserListView
@@ -14,25 +15,46 @@ from kivy.uix.boxlayout import BoxLayout
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
 
+Builder.load_string('''
+<CurrentDisplayScreen>:
+    canvas.before:
+        Color:
+            rgb: 0.820, 0.925, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+''')
+
+
 class CurrentDisplayScreen(Screen):
     name = 'display'
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        folder_id = '187UAKNesq0U0FA6E043aP-JnTKGixDhA'  # Replace 'your_folder_id' with the actual folder ID
+        folder_id = '187UAKNesq0U0FA6E043aP-JnTKGixDhA'
 
-        # Create a BoxLayout to split the screen vertically
+        # Create a vertical BoxLayout to hold the buttons and another layout
         layout = BoxLayout(orientation='vertical')
 
-        # Create buttons for Add Alarm and Add Image
-        add_alarm_button = Button(text="Add Alarm", size_hint=(1, 0.5), on_press=self.add_alarm)
-        add_image_button = Button(text="Add Image", size_hint=(1, 0.5), on_press=lambda instance: self.show_image_popup(folder_id))
+        # Create a horizontal BoxLayout for the row of buttons
+        button_row = BoxLayout(orientation='horizontal')
 
-        # Add buttons to the layout
-        layout.add_widget(add_alarm_button)
-        layout.add_widget(add_image_button)
+        # Add some spacing to push the buttons to the bottom of the screen
+        layout.add_widget(BoxLayout(size_hint_y=0.99))
 
-        # Add the layout to the screen
+        add_alarm_button = Button(text="Add Alarm", size_hint=(0.5, 1), on_press=self.add_alarm, background_color=[0.475, 0.655, 0.784])
+        add_image_button = Button(text="Add Image", size_hint=(0.5, 1), on_press=lambda instance: self.show_image_popup(folder_id), background_color=[0.475, 0.655, 0.784])
+
+        # Add buttons to the button_row layout
+        button_row.add_widget(add_alarm_button)
+        button_row.add_widget(add_image_button)
+
+        # Add the button_row to the main layout
+        layout.add_widget(button_row)
+
+
+
+        # Add the main layout to the screen
         self.add_widget(layout)
 
     def show_image_popup(self, folder_id):
@@ -40,7 +62,6 @@ class CurrentDisplayScreen(Screen):
         popup.open()
 
     def add_alarm(self, instance):
-        # Add your functionality to handle adding an alarm here
         print("Add Alarm button clicked")
         App.get_running_app().show_current_reminder_screen()
 
