@@ -4,8 +4,9 @@ from kivy.uix.screenmanager import ScreenManager
 from GUI.CurrentDisplayScreen import CurrentDisplayScreen
 from GUI.LoginScreen import LoginScreen
 from GUI.ReminderScreen import ReminderScreen
+from kivymd.app import MDApp
 
-class App(App):
+class App(MDApp):
 
     def build(self):
         self.sm = ScreenManager()
