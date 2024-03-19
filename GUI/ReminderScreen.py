@@ -1,3 +1,4 @@
+from kivy.lang import Builder
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
@@ -11,8 +12,20 @@ import pyaudio
 import wave
 import json
 
+Builder.load_string('''
+<ReminderScreen>:
+    canvas.before:
+        Color:
+            rgb: 0.820, 0.925, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+''')
+
+
 class ReminderScreen(Screen):
     name = 'reminder'
+
     def __init__(self, **kwargs):
         super(ReminderScreen, self).__init__(**kwargs)
 
@@ -20,12 +33,12 @@ class ReminderScreen(Screen):
         self.layout = BoxLayout(orientation='vertical')
 
         # Add title label
-        self.title_label = Label(text='Reminder', font_size=30)
+        self.title_label = Label(text='Reminder', font_size=30, color=[0.475, 0.655, 0.784])
         self.layout.add_widget(self.title_label)
 
         # Add date and time input fields
-        self.date_input = TextInput(hint_text='Select Date')
-        self.time_input = TextInput(hint_text='Select Time')
+        self.date_input = TextInput(hint_text='Enter Date')
+        self.time_input = TextInput(hint_text='Enter Time')
         self.layout.add_widget(self.date_input)
         self.layout.add_widget(self.time_input)
 
@@ -33,19 +46,13 @@ class ReminderScreen(Screen):
         self.note_input = TextInput(hint_text='Enter Note')
         self.layout.add_widget(self.note_input)
 
-        # Add buttons for date, time, save, and record audio
-        self.date_button = Button(text='Select Date')
-        self.date_button.bind(on_press=self.show_date_picker)
-        self.time_button = Button(text='Select Time')
-        self.time_button.bind(on_press=self.show_time_picker)
+        # Add buttons
         self.add_audio_button = Button(text='Add Audio')
         self.add_audio_button.bind(on_press=self.show_audio_popup)
         self.record_audio_button = Button(text='Record Audio')
         self.record_audio_button.bind(on_press=self.record_audio_wrapper)
         self.save_button = Button(text='Save Reminder')
         self.save_button.bind(on_press=self.save_reminder)
-        self.layout.add_widget(self.date_button)
-        self.layout.add_widget(self.time_button)
         self.layout.add_widget(self.add_audio_button)
         self.layout.add_widget(self.record_audio_button)
         self.layout.add_widget(self.save_button)
