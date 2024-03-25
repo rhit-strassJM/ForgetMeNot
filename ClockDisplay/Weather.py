@@ -15,18 +15,28 @@ class WeatherScreen(Screen):
 
         layout = BoxLayout(orientation='horizontal', spacing=10, padding=10)
 
-        # Add left image
-        left_image = AsyncImage(source='IconImages/Sunny.jpg', allow_stretch=False, keep_ratio=True)
+        # Determine which image to use based on the weather condition
+        if weather_data['condition'].lower() == "sunny":
+            image_source = 'IconImages/Rainy.jpg'
+        elif weather_data['condition'].lower() == "partly cloudy":
+            image_source = 'IconImages/Rainy.jpg'
+        elif weather_data['condition'].lower() == "partly rainy":
+            image_source = 'IconImages/Rainy.jpg'
+        else:
+            # Use a default image for other conditions
+            image_source = 'IconImages/Sunny.jpg'
+
+        left_image = AsyncImage(source=image_source, allow_stretch=False, keep_ratio=True)
         layout.add_widget(left_image)
 
         # Create a vertical BoxLayout for labels and right image
         label_layout = BoxLayout(orientation='vertical', spacing=10)
 
         # Add labels with bold text and larger font size
-        temperature_label = self.create_label(f"Temperature: {weather_data['temperature']}°C", font_size=30)
-        humidity_label = self.create_label(f"Humidity: {weather_data['humidity']}%", font_size=30)
-        condition_label = self.create_label(f"Condition: {weather_data['condition']}", font_size=30)
-        wind_label = self.create_label(f"Wind Speed: {weather_data['wind_speed']} km/h", font_size=30)
+        temperature_label = self.create_label(f"Temperature: {weather_data['temperature']}°C", font_size=70)
+        humidity_label = self.create_label(f"Humidity: {weather_data['humidity']}%", font_size=70)
+        condition_label = self.create_label(f"Condition: {weather_data['condition']}", font_size=70)
+        wind_label = self.create_label(f"Wind Speed: {weather_data['wind_speed']} km/h", font_size=70)
 
         # Add labels to the vertical layout
         label_layout.add_widget(temperature_label)
