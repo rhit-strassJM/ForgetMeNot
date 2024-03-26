@@ -1,5 +1,4 @@
 import kivy
-from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen, ScreenManager
@@ -10,9 +9,9 @@ import requests
 
 kivy.require("2.1.0")  # replace with your Kivy version if necessary
 
-class LoadingScreen(Screen):
+class LocationScreen(Screen):
     def __init__(self, **kwargs):
-        super(LoadingScreen, self).__init__(**kwargs)
+        super(LocationScreen, self).__init__(**kwargs)
         self.layout = BoxLayout(orientation="vertical", padding=10)
 
         # Add LocationPin image
@@ -59,12 +58,11 @@ class LoadingScreen(Screen):
         self.rect.pos = self.pos
         self.rect.size = self.size
 
-class LocationApp(App):
-    def build(self):
-        screen_manager = ScreenManager()
-        loading_screen = LoadingScreen(name='loading')
-        screen_manager.add_widget(loading_screen)
-        return screen_manager
+if __name__ == '__main__':
+    from kivy.uix.screenmanager import ScreenManager
 
-if __name__ == "__main__":
-    LocationApp().run()
+    screen_manager = ScreenManager()
+    screen_manager.add_widget(LocationScreen(name='location'))
+
+    from kivy.base import runTouchApp
+    runTouchApp(screen_manager)
