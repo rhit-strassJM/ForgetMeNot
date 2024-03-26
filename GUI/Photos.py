@@ -1,6 +1,7 @@
 import os
 import kivy
 from kivy.app import App
+from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.image import Image
 from kivy.clock import Clock
@@ -8,7 +9,7 @@ from kivy.animation import Animation
 
 kivy.require("2.1.0")  # replace with your Kivy version if necessary
 
-class ImageFlipperApp(App):
+class ImageFlipperScreen(Screen):
     def build(self):
         self.layout = BoxLayout(orientation="vertical")
 
@@ -70,4 +71,11 @@ class ImageFlipperApp(App):
         return self.layout
 
 if __name__ == "__main__":
-    ImageFlipperApp().run()
+    from kivy.uix.screenmanager import ScreenManager
+
+    screen_manager = ScreenManager()
+    screen_manager.add_widget(ImageFlipperScreen(name='photos'))
+
+    from kivy.base import runTouchApp
+
+    runTouchApp(screen_manager)

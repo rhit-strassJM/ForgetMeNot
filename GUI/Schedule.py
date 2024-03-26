@@ -9,6 +9,8 @@ from kivy.properties import NumericProperty
 from kivy.core.window import Window  # Import Window to set background color
 
 from GUI.data_manager import reminder_entries
+from kivy.uix.screenmanager import Screen
+
 
 
 class RoundedBackground(BoxLayout):
@@ -39,7 +41,7 @@ class RoundedBackground(BoxLayout):
             RoundedRectangle(pos=self.pos, size=self.size, radius=[self.radius, self.radius, self.radius, self.radius])
 
 
-class ReminderDisplay(App):
+class ReminderDisplay(Screen):
     def build(self):
         # Set the background color of the Window
         Window.clearcolor = (1, 1, 1, 1)
@@ -61,4 +63,11 @@ class ReminderDisplay(App):
 
 
 if __name__ == '__main__':
-    ReminderDisplay().run()
+    from kivy.uix.screenmanager import ScreenManager
+
+    screen_manager = ScreenManager()
+    screen_manager.add_widget(ReminderDisplay(name='reminders'))
+
+    from kivy.base import runTouchApp
+
+    runTouchApp(screen_manager)

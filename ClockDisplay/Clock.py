@@ -3,7 +3,7 @@ import datetime
 import math
 import time
 from functools import partial
-
+from kivy.uix.screenmanager import Screen
 from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
@@ -15,7 +15,7 @@ from time import asctime
 
 
 Builder.load_string('''
-<MyClockWidget>:
+<ClockScreen>:
 
     on_pos: self.update_clock()
     on_size: self.update_clock()
@@ -84,7 +84,7 @@ Builder.load_string('''
 Position = collections.namedtuple('Position', 'x y')
 
 
-class MyClockWidget(FloatLayout):
+class ClockScreen(Screen):
     formatted_date = time.strftime("%A %B %d %Y")
 
     digital_clock_date = Label(
@@ -172,10 +172,12 @@ class MyClockWidget(FloatLayout):
         self.digital_clock_time.text = formatted_time
 
 
-class MyApp(App):
-    def build(self):
-        return MyClockWidget()
-
 
 if __name__ == '__main__':
-    MyApp().run()
+    from kivy.uix.screenmanager import ScreenManager
+
+    screen_manager = ScreenManager()
+    screen_manager.add_widget(ClockScreen(name='clock'))
+
+    from kivy.base import runTouchApp
+    runTouchApp(screen_manager)
